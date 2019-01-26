@@ -54,7 +54,10 @@ function getMovie(searchTerm)
         const movieposter = $('div.poster a img').attr('src')
         const datePublished = genres.pop()
         const summary = $('div.summary_text').text().trim()
-        const director = $('div.credit_summary_item a').contents().first().text()
+        const Directors = $('div.credit_summary_item').text().split(':')[1].split('Writer')[0].split('|')[0].trim()
+        const Writers = $('div.credit_summary_item').text().split(':')[2].split('Stars')[0].split('|')[0].trim()
+        const Stars = $('div.credit_summary_item').text().split(':')[3].split('|')[0].trim()
+        const metascore = $('div.titleReviewBarItem a div span').text()
         return {
             title,
             rating,
@@ -64,7 +67,10 @@ function getMovie(searchTerm)
             imdbRating,
             movieposter,
             summary,
-            director
+            Directors,
+            Writers,
+            Stars,
+            metascore
         }
     })
 }
