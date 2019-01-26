@@ -5,8 +5,16 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
 const url = 'https://www.imdb.com/find?ref_=nv_sr_fn&s=all&q='
 const url1 = 'https://www.imdb.com/title/'
 
+const searchcache = {}
+const moviecache = {}
+
 function searchMovies(searchTerm)
 {
+    if(searchcache[searchTerm])
+    {
+        console.log("Serving from Cache")
+        return Promise.resolve(searchcache[searchTerm])
+    }
     const movies = []
     return fetch(`${url}${searchTerm}`)
     .then(Response => Response.text())
@@ -28,12 +36,18 @@ function searchMovies(searchTerm)
             }
             movies.push(movie)
         })
+        searchcache[searchTerm] = movies
         return movies
     }).catch()
 }
 
 function getMovie(searchTerm)
 {
+    if(moviecache[searchTerm])
+    {
+        console.log("Serving from Cache")
+        return Promise.resolve(moviecache[searchTerm])
+    }
     return fetch(`${url1}${searchTerm}`)
     .then(Response => Response.text())
     .then(body => {
@@ -58,7 +72,7 @@ function getMovie(searchTerm)
         const Writers = $('div.credit_summary_item').text().split(':')[2].split('Stars')[0].split('|')[0].trim()
         const Stars = $('div.credit_summary_item').text().split(':')[3].split('|')[0].trim()
         const metascore = $('div.titleReviewBarItem a div span').text()
-        return {
+        const movie = {
             title,
             rating,
             runTime,
@@ -72,6 +86,8 @@ function getMovie(searchTerm)
             Stars,
             metascore
         }
+        moviecache[searchTerm] = movie;
+        return movie
     })
 }
 
